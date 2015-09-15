@@ -24,7 +24,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <h1 class="paper-font-display1"><span>{{greeting}}</span></h1>
     <span class="paper-font-body2">Update text to change the greeting.</span>
     <!-- Listens for "input" event and sets greeting to <input>.value -->
-    <input class="paper-font-body2" value="{{greeting::input}}">
+    <input class="paper-font-body2" value="{{greeting::input}}" on-change>
   </template>
 
   <script>

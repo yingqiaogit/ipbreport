@@ -8,7 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<dom-module id="my-greeting">
+<dom-module id="language-selector">
   <style>
     :host {
       display: block;
@@ -21,23 +21,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   </style>
   <template>
-    <h1 class="paper-font-display1"><span>{{greeting}}</span></h1>
-    <span class="paper-font-body2">Update text to change the greeting.</span>
+    <h1 class="paper-font-display1"><span>{{selectedLanguage}}</span></h1>
+    <span class="paper-font-body2">Select language to change the greeting.</span>
+
+    <!-- display the greeting in different languages   -->
+    <!-- call the language translator for getting the supported language -->
+
+    <paper-radio-group id="languagegroup" selected='en'>
+      <template is="dom-repeat" items="{{languages}}">
+        <paper-radio-button name ="{{item.abr}}" value="{{item.des}}" on-click="buttonHandler">{{item.des}}</paper-radio-button>
+      </template>
+    </paper-radio-group>
+    <!-- the label is a button could be used to select the language  -->
+
     <!-- Listens for "input" event and sets greeting to <input>.value -->
-    <input class="paper-font-body2" value="{{greeting::input}}">
+    <div class="paper-font-display1" >{{selectedLanguage}}</div>
+
+    <!-- ajax call for retrieving the language -->
+    <iron-ajax method="GET" id="getgreetings" contentType="application/json" handle-as="json" on-respone="handleResponse" debounce-duration="300">
+    </iron-ajax>
+
   </template>
 
   <script>
     (function() {
       Polymer({
-        is: 'my-greeting',
+        is: 'language-selector',
 
         properties: {
-          greeting: {
-            type: String,
-            value: 'Welcome!',
+          selectedLanguage:{
+            type:String,
+            value:'English',
             notify: true
+          },
+          languages:{
+            type: Array,
+            value: [{abr:'en',des:'I select English'},
+                    {abr:'fr', des: 'I select French'},
+                    {abr:'ch', des: 'I select Chinese'}]
           }
+        },
+
+        buttonHandler: function(event){
+          var group = document.getElementById('languagegroup');
+          this.$.selectedLanguage= group.selectedItem.value;
         }
       });
     })();
