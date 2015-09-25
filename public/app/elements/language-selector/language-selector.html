@@ -65,6 +65,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         buttonHandler: function(event){
           var group = document.getElementById('languagegroup');
           this.$.selectedLanguage= group.selectedItem.value;
+
+          //fire a custom event
+          this.fire('langchanged',{languageshort:group.selectedItem.name,
+                                   languagelong:group.selectedItem.value });
+
         }
       });
     })();

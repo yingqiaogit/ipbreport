@@ -28,6 +28,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   // See https://github.com/Polymer/polymer/issues/1381
   window.addEventListener('WebComponentsReady', function() {
     // imports are loaded and elements have been registered
+    app.selectedLanguage=" I selected English";
+
+    var languageSelector = document.getElementById('langSelElement');
+
+    languageSelector.addEventListener('langchanged', function(event){
+      app.languageAbr = event.detail.languageshort;
+      app.selectedLanguage = event.detail.languagelong
+    });
+
   });
 
   // Main area's paper-scroll-header-panel custom condensing transformation of
