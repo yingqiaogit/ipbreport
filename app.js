@@ -40,20 +40,56 @@ var appEnv = cfenv.getAppEnv();
 app.listen(appEnv.port, appEnv.bind, function () {
 
   // print a message when the server starts listening
-  logger.info('server starting on ' + appEnv.url);
+  console.log('server starting on ' + appEnv.url);
 });
 
 // catch 404 and forward to error handler
+/*
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
-
+*/
 // error handlers
 
 // development error handler
 // will print stacktrace
+
+require('./routes/index')(app);
+require('./routes/requests')(app);
+
+var watson = require('watson-developer-cloud');
+
+var initExtractionCredential = function(){
+
+  if (process.env.VCAP_SERVICES)
+  {
+    var service = process.env.VCAP_SERVICES;
+
+    if (services.relationship_extraction)
+    {
+      var credentials = services.relationship_extraction.credentials;
+      extractionCredential.username = credentials.username;
+      extractionCredential.password = credentials.password;
+      extractionCredential.url = credentials.url;
+      extractionCredential.version = 'v1';
+    }
+    else{
+      console.log("using local varial");
+      extractionCredential.username = process.env.relationship_extraction_username;
+      extractionCredential.password = process.env.relationship_extraction_password;
+      extractionCredential.url = process.env.relationship_extraction_url;
+      extractionCredential.version = 'v1';
+    }
+  }
+}
+
+var extractionCredential = {};
+initExtractionCredential();
+var relationshipExtr = watson.relationship_extraction(extractionCredential)
+app.locals.relationshipExtraction = relationshipExtr;
+
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
@@ -73,6 +109,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 

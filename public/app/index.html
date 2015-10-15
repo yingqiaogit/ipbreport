@@ -9,10 +9,10 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<html lang="">
+<html>
 
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="Polymer Starter Kit" />
@@ -43,15 +43,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
 
   <!-- build:css styles/main.css -->
-  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="../app/styles/main.css">
   <!-- endbuild-->
 
   <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
-  <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../app/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <!-- endbuild -->
 
   <!-- will be replaced with elements/elements.vulcanized.html -->
-  <link rel="import" href="elements/elements.html">
+  <link rel="import" href="../app/elements/elements.html">
   <!-- endreplace-->
 </head>
 
@@ -75,9 +75,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <span>Home</span>
           </a>
 
-          <a data-route="users" href="/users">
+          <a data-route="requests" href="/requests">
             <iron-icon icon="info"></iron-icon>
-            <span>Users</span>
+            <span>Requests</span>
           </a>
 
           <a data-route="contact" href="/contact">
@@ -118,17 +118,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <section data-route="home">
 
               <paper-material elevation="1">
-                  <language-selector id="langSelElement" selected-language="{{selectedLanguage}}"></language-selector>
+                  <language-selector id="langSelElement" selected-language="{{selectedLanguage}}"　
+                                     languages="{{langs}}">
+                  </language-selector>
               </paper-material>
 
+              <paper-radio-button name ="en"  value="I select English" on-click="buttonHandler" lang="en"><span lang="en">I select English</span></paper-radio-button>
+              <paper-radio-button name ="fr"  value="je parle français" on-click="buttonHandler" lang="fr"><span lang="fr">je parle français</span></paper-radio-button>
+              <paper-radio-button name ="zh-Hans"  value="我使用中文" on-click="buttonHandler" lang="zh-Hans"><span lang="zh-Hans">我使用中文</span></paper-radio-button>
+
+              <p>我使用中文</p>
+              <p id="chineseText" lang="zh-Hans"></p>
               <p id="request">Request in <span>{{languageAbr}}</span></p>
+
             </section>
 
-            <section data-route="users">
+            <section data-route="requests">
               <paper-material elevation="1">
-                <h2 class="paper-font-display2">Users</h2>
-                <p>This is the users section</p>
-                <a href="/users/Rob">Rob</a>
+                <request-item id="requestItem1" request-text="{{myrequests}}"></request-item>
+
               </paper-material>
             </section>
 
@@ -173,7 +181,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <!-- build:js scripts/app.js -->
-  <script src="scripts/app.js"></script>
+  <script src="../app/scripts/app.js" charset="UTF-8"></script>
   <!-- endbuild-->
 </body>
 

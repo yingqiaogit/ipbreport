@@ -7,6 +7,8 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
 
 <dom-module id="language-selector">
   <style>
@@ -29,14 +31,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <paper-radio-group id="languagegroup" selected='en'>
       <template is="dom-repeat" items="{{languages}}">
-        <paper-radio-button name ="{{item.abr}}" value="{{item.des}}" on-click="buttonHandler">{{item.des}}</paper-radio-button>
+        <paper-radio-button name ="{{item.abr}}"  value="{{item.des}}" on-click="buttonHandler" lang="{{item.abr}}"><span lang="{{item.abr}}">{{item.des}}</span></paper-radio-button>
       </template>
+      <paper-radio-button name ="en"  value="I select English" on-click="buttonHandler" lang="en"><span lang="en">I select English</span></paper-radio-button>
+      <paper-radio-button name ="fr"  value="je parle français" on-click="buttonHandler" lang="fr"><span lang="fr">je parle français</span></paper-radio-button>
+      <paper-radio-button name ="zh-Hans"  value="" on-click="buttonHandler" lang="zh-Hans"><span lang="zh-Hans"></span></paper-radio-button>
     </paper-radio-group>
-    <!-- the label is a button could be used to select the language  -->
 
-    <!-- Listens for "input" event and sets greeting to <input>.value -->
-    <div class="paper-font-display1" >{{selectedLanguage}}</div>
-
+    <p></p>
     <!-- ajax call for retrieving the language -->
     <iron-ajax method="GET" id="getgreetings" contentType="application/json" handle-as="json" on-respone="handleResponse" debounce-duration="300">
     </iron-ajax>
@@ -56,9 +58,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           languages:{
             type: Array,
-            value: [{abr:'en',des:'I select English'},
-                    {abr:'fr', des: 'I select French'},
-                    {abr:'ch', des: 'I select Chinese'}]
+            value: [
+              {abr:'en',des:'I select English'},
+              {abr:'fr', des: 'je parle français'},
+              {abr:'zh-Hans', des: '?????'}]
           }
         },
 

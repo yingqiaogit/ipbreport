@@ -37,6 +37,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app.selectedLanguage = event.detail.languagelong
     });
 
+    var configuredLang = [
+      {abr:'en',des:'I select English'},
+      {abr:'fr', des: 'je parle français'},
+      {abr:'zh-Hans', des: '?????'}];
+
+    app.langs = configuredLang;
+    app.chinese = '?????';
+    app.english='I speak English';
+
+    var chineseText = document.getElementById("chineseText");
+
+    chineseText.innerHTML = '?????';
+
+
   });
 
   // Main area's paper-scroll-header-panel custom condensing transformation of
