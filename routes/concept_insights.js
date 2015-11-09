@@ -6,6 +6,7 @@ module.exports = function(app){
 
     //get an account id from concept insight
     var concept_insights = app.locals.conceptInsights;
+    var relationship_extraction = app.locals.relationshipExtraction;
 
     var requester = require('request');
 
@@ -33,6 +34,8 @@ module.exports = function(app){
 
             corpus_id = "/corpora/"+ account_id+ "/mytest";
 
+            app.locals.corpus_id = corpus_id;
+
             var params = {
                 access: "public",
                 corpus: corpus_id,
@@ -50,6 +53,7 @@ module.exports = function(app){
             concept_insights.corpora.createCorpus(params,function(err, response){
                 if (err)
                 {
+                    // will load it later
                     load_corpus();
                     console.log("error" + JSON.stringify(err));
                     return;
@@ -125,8 +129,7 @@ module.exports = function(app){
                 if (error)
                     return console.log(error);
 
-                var retrieved_data = JSON.parse(body).data[0];
-                var retrieved_fields = retrieved_data.fields;
+                var retrieved_fields = JSON.parse(body).data[0].fields;
                 var document = retrieved_fields.description;
 
                 console.log(document);
@@ -134,38 +137,70 @@ module.exports = function(app){
                 var document_id = retrieved_fields.id;
                 var document_label = retrieved_fields.name;
 
-                var params = {
-                    id: corpus_id + '/documents/' + document_id,
+                async.parallel(
+                [
+                    function(callback){
+                        callback();
+                    },
+                    /*
+                    function(callback) {
 
-                    // document data
-                    document: {
-                        label: document_label,
-                        parts: [{
-                            name: document_label,
-                            data: document
-                        }]
+                        var params = {
+                            id: corpus_id + '/documents/' + document_id,
+
+                            // document data
+                            document: {
+                                label: document_label,
+                                parts: [{
+                                    name: document_label,
+                                    data: document
+                                }]
+                            }
+                        };
+
+                        concept_insights.corpora.createDocument(params, function (err, response) {
+                            if (err) {
+                                console.log("create " + document_label + " error" + JSON.stringify(err));
+                            } else {
+                                console.log("document " + document_label + " created");
+                            }
+                        });
+
+                        callback();
+                    },
+                    */
+                    //retrieve the mentions and their relationship by using relationship_extraction
+                    // and stored in the document in the db
+                    function(callback) {
+
+                        relationship_extraction.extract({
+                                text: document,
+                                dataset:'ie-en-news'},
+                            function(err, response) {
+                                if (err) {
+                                    console.log('error:', err);
+                                    res.status(400).send({error: "bad request"});
+                                }
+                                else {
+                                    console.log(JSON.stringify(response));
+                                    callback();
+                                }
+                            });
                     }
-                };
 
-                concept_insights.corpora.createDocument(params, function(err,response){
-                    if (err)
-                        return console.log("create " + document_label +" error" + JSON.stringify(err));
 
-                    console.log("document " + document_label + " created");
+                ], function(err) {
+                        //store the meta data in the db
+                        //one disaster may have multiple documents
+                        //so, the disaster ID should be an index
+                        //the id of documents in the db is auto-generated
+                        //one document in the db is the whole "data" field retrieved from the reliefWeb
 
+                        //store_doc_db(retrieved_data, "headline", "reliefWeb", document_id);
                 });
-
-                //store the meta data in the db
-                //one disaster may have multiple documents
-                //so, the disaster ID should be an index
-                //the id of documents in the db is auto-generated
-                //one document in the db is the whole "data" field retrieved from the reliefWeb
-
-                store_doc_db(retrieved_data,"headline","reliefWeb",document_id);
-
             });
         });
-    }
+    };
 
     var store_doc_db = function (data,doc_type,source,id) {
         var doc = data;
@@ -192,13 +227,12 @@ module.exports = function(app){
         //the primary key is auto generated to store multiple sets of answers of a user
         var disaster_db= app.locals.dbs.disasters.handler;
 
-        disaster_db.insert(doc, null, function (err, body) {
+        disaster_db.insert(doc, doc.id, function (err, body) {
             if (!err)
                 console.log('stored correctly with information as ' + body);
             else
                 console.log(err);
         });
-
     };
 
     var documentId = 0 ;

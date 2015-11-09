@@ -4,13 +4,62 @@
 
 module.exports= function(app){
 
-    app.post('/request/submit', function(req,res){
+    //retrieve the doc url by id in the request
+    app.get('/request', function(req,res){
 
         //retrieve the JSON body of req
-        var input = req.body;
+        var doc_id = req.query.id;
 
+        console.log("doc id" + doc_id);
 
+        var disasterdb = app.locals.dbs.disasters.handler;
 
+        /*var indexspec = app.locals.dbs.disasters.indexes;
+
+        //retrieve the document from the disasters db by the id
+        var query = {
+            "selector": {
+                "id": {
+                    "$exists":true,
+                    "$eq": doc_id
+                }
+            },
+            "sort": [{"id":"desc"},
+                {"recorded_at": "desc"}],
+            "limit": 1,
+            "skip":0
+        };
+
+        disasterdb.find(indexspec.disaster, query, function (err, results) {
+            if (err) {
+                console.log("retrieve error" + JSON.stringify(err));
+                res.json(null);
+            } else {
+                console.log("number of document is %d, first result is %s ", results.docs.length, JSON.stringify(results.docs[0]));
+                console.log("time of the submissions")
+                /*
+                 for (var doc in results.docs){
+                 console.log (results.docs[doc].formdata.timestamp.end + " ");
+                 }
+
+                if (results.docs.length) {
+                    var url = results.docs[0].fields.url;
+                    res.redirect(url);
+                }
+                else
+                    res.json(null);
+                //res.json(results.formdata);
+            }
+        });*/
+
+        disasterdb.get(doc_id, {revs_info:true}, function(err,body){
+            if (!err){
+
+                res.redirect(body.fields.url);
+            }
+                res.status(404).send({status:'error'});
+        });
 
     });
+
 }

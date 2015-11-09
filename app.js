@@ -118,12 +118,19 @@ app.locals.conceptInsightsUsername = conceptInsightsCredentials.username;
 //add a cloudant service to the instance
 //init the db
 //store the meta data of the document in the db
-var dbs= {
-   disasters: {
-      name: "disasters",
-      handler: null,
-      indexes: {}
-    }
+var cloudant_db= {
+   dbs: {
+     disasters: {
+       name: "disasters",
+       handler: null,
+       indexes: {}
+     },
+     queries: {
+       name: "queries",
+       handler: null,
+       indexes: {}
+     }
+   }
 };
 
 var cloudant;
@@ -131,14 +138,14 @@ var cloudant;
 var async = require('async');
 
 function useDatabase(next) {
-  async.forEach(Object.keys(dbs), function (db, callback) {
-    cloudant.db.create(dbs[db].name, function (err, res) {
+  async.forEach(Object.keys(cloudant_db.dbs), function (db, callback) {
+    cloudant.db.create(cloudant_db.dbs[db].name, function (err, res) {
       if (err) {
-        console.log('database ' + dbs[db].name + ' already created');
+        console.log('database ' + cloudant_db.dbs[db].name + ' already created');
       } else {
-        console.log('database ' + dbs[db].name + ' is created');
+        console.log('database ' + cloudant_db.dbs[db].name + ' is created');
       }
-      dbs[db].handler = cloudant.use(dbs[db].name);
+      cloudant_db.dbs[db].handler = cloudant.use(cloudant_db.dbs[db].name);
 
       callback();
     });
@@ -147,7 +154,7 @@ function useDatabase(next) {
     //create the index on answers db here,
     //the index is upon the field of user_token;
 
-    var disaster_db = dbs.disasters.handler;
+    var disaster_db = cloudant_db.dbs.disasters.handler;
     var disaster_index = {
       name: 'disaster',
       type: 'json',
@@ -157,7 +164,7 @@ function useDatabase(next) {
             "id": "desc"
           },
           {
-            "recordedat": "desc"
+            "recorded_at": "desc"
           }
         ]
       }
@@ -167,9 +174,9 @@ function useDatabase(next) {
       if (err)
         console.log("create index error" + JSON.stringify(err));
       else
-        dbs.disasters.indexes.disaster = response;
+        cloudant_db.dbs.disasters.indexes.disaster = response;
 
-      console.log('Index creation result: ', JSON.stringify(response));
+      console.log('Index creation result: ' + response);
 
     });
 
@@ -179,7 +186,7 @@ function useDatabase(next) {
 }
 
 var set_app_db = function(){
-  app.locals.dbs = dbs;
+  app.locals.dbs = cloudant_db.dbs;
 }
 
 function initializeDatabase(callback) {
@@ -191,13 +198,13 @@ function initializeDatabase(callback) {
 
       var credentials = vcapServices.cloudantNoSQLDB[0].credentials;
 
-      dbs.host = credentials.host;
-      dbs.port = credentials.port;
-      dbs.user = credentials.username;
-      dbs.password = credentials.password;
-      dbs.url = credentials.url;
+      cloudant_db.host = credentials.host;
+      cloudant_db.port = credentials.port;
+      cloudant_db.user = credentials.username;
+      cloudant_db.password = credentials.password;
+      cloudant_db.url = credentials.url;
 
-      cloudant = require('cloudant')(dbs.url);
+      cloudant = require('cloudant')(cloudant_db.url);
 
       useDatabase(callback);
     } else {
@@ -206,14 +213,14 @@ function initializeDatabase(callback) {
   } else {
 
     if (process.env.cloudant_hostname && process.env.cloudant_username && process.env.cloudant_password) {
-      dbs.host = process.env.cloudant_hostname;
-      dbs.user = process.env.cloudant_username;
-      dbs.password = process.env.cloudant_password;
+      cloudant_db.host = process.env.cloudant_hostname;
+      cloudant_db.user = process.env.cloudant_username;
+      cloudant_db.password = process.env.cloudant_password;
 
       cloudant = require('cloudant')({
-        hostname: dbs.host,
-        account: dbs.user,
-        password: dbs.password
+        hostname: cloudant_db.host,
+        account: cloudant_db.user,
+        password: cloudant_db.password
       });
 
       useDatabase(callback);
@@ -227,6 +234,7 @@ require('./routes/index')(app);
 require('./routes/requests')(app);
 require('./routes/relationship_extraction')(app);
 require('./routes/concept_insights')(app);
+require('./routes/query')(app);
 
 // catch 404 and forward to error handler
 /*
