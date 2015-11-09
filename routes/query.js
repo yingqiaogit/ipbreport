@@ -123,7 +123,7 @@ module.exports=function(app){
 
     app.post('/query/submit', function(req, res){
 
-        var query_doc = JSON.parse(Object.keys(req.body)[0]);
+        query_doc = JSON.parse(Object.keys(req.body)[0]);
 
         console.log(JSON.stringify(query_doc));
 

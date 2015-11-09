@@ -178,15 +178,18 @@ function useDatabase(next) {
 
       console.log('Index creation result: ' + response);
 
+      next();
     });
-
-    next();
-
   });
 }
 
-var set_app_db = function(){
+var set_app = function(){
   app.locals.dbs = cloudant_db.dbs;
+  require('./routes/index')(app);
+  require('./routes/requests')(app);
+  require('./routes/relationship_extraction')(app);
+  require('./routes/concept_insights')(app);
+  require('./routes/query')(app);
 }
 
 function initializeDatabase(callback) {
@@ -228,13 +231,7 @@ function initializeDatabase(callback) {
   }
 }
 
-initializeDatabase(set_app_db);
-
-require('./routes/index')(app);
-require('./routes/requests')(app);
-require('./routes/relationship_extraction')(app);
-require('./routes/concept_insights')(app);
-require('./routes/query')(app);
+initializeDatabase(set_app);
 
 // catch 404 and forward to error handler
 /*
