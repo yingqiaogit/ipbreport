@@ -27,11 +27,9 @@ module.exports = function(app){
            console.log(JSON.stringify(response));
            account_id = response.accounts[0].account_id;
            console.log(account_id);
-
+           setCorpusId('mytest');
        }
     });
-
-    setCorpusId('mytest');
 
     var getCorpusParam = function(){
 
