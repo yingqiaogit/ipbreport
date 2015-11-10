@@ -59,7 +59,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <span id="browser-sync-binding"></span>
     <template is="dom-bind" id="app">
 
-        <paper-scroll-header-panel class="flex" fixed="true">
+        <paper-scroll-header-panel class="flex" fixed="false">
 
 
             <!-- Main Toolbar -->
@@ -82,6 +82,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <paper-tabs id="categoryTab" selected="0" class="bottom self-end" style=" margin-bottom:0;color:white;font-size:14px;">
                     <paper-tab>SEARCH</paper-tab>
                     <paper-tab>ANALYSIS</paper-tab>
+                    <paper-tab>SUMMARY</paper-tab>
                 </paper-tabs>
 
                 <!--                <div class="bottom flex self-start"></div>-->
@@ -107,6 +108,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                         <paper-fab id="recommendationButton" class="nextButton" icon="file-upload"></paper-fab>
                         <p class="nextButton">Search &nbsp </p>
+                        <paper-toast id="toaster" text="Please remove special characters like [ ],or ' "></paper-toast>
 
                     </section>
 
@@ -164,6 +166,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 </table>
                             </v-grid>
                         </paper-material>
+                    </section>
+
+                    <section data-route="summary" animateInitialSelection="true" id="summarySec">
+
+                        <div class="subject">Features</div>
+                        <paper-material elevation="1">
+                            <ul>
+                                <li>This APP realizes a RESTful API which searches for disaster information in ReliefWeb</li> <br>
+                                <li>The search uses the concepts contained in a query</li> <br>
+                                <li>A query is a text document in English</li> <br>
+                                <li>The search returns the documents whose concepts are related to a query</li> <br>
+                                <li>The returned documents are ranked by their scores of concept relationship from the perspectives of two categories</li> <br>
+                                <li>Two concept categories are: location and geological object</li> <br>
+                            </ul>
+                        </paper-material>
+
+                        <div class="subject">Components</div>
+                        <paper-material elevation="1">
+                            <ul>
+                                <li>Node.js/Express.js</li> <br>
+                                <li>Polymer</li> <br>
+                                <li>Bluemix Instance</li> <br>
+                                <li>Concept Insights</li> <br>
+                                <li>Relationship Extraction</li> <br>
+                                <li>Cloudant NoSQL</li> <br>
+                            </ul>
+                        </paper-material>
+
+                        <div class="subject">Future Work</div>
+                        <paper-material elevation="1">
+                            <ul>
+                                <li>The search function may have a concept category on geographical feature</li> <br>
+                            </ul>
+                        </paper-material>
+
+                        <div class="subject">Acknowledgements</div>
+                        <paper-material elevation="1">
+                            <ul>
+                                <li>Denis Carriere, for the idea that inspired this project</li> <br>
+                                <li>Anton McConville, for lending Ploymer elements to this project</li> <br>
+                                <li>Serena Pietruszka in DevPost, for supporting the development of this project</li> <br>
+                            </ul>
+                        </paper-material>
+
                     </section>
 
                     <iron-ajax method="POST" id="queryCall" url="/query/submit" contentType="application/json" handle-as="json" debounce-duration="300">

@@ -36,10 +36,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         var pages = document.querySelector('iron-pages');
 
-        var searchingpage = "home";
-
-        var analysispage = "similarityanalysis";
-
         app.switch = function () {
             pages.selectNext();
         };
@@ -69,13 +65,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         categorySelect.addEventListener('click', function (event) {
 
             if (categorySelect.selected == 0) {
-                    pages.selected = searchingpage;
+                    pages.selected = "home";
             } else
                 if (categorySelect.selected == 1)
                 {
-                    pages.selected = analysispage;
+                    pages.selected = "similarityanalysis";
                     openAnalysis();
-                }
+                }else
+                    if (categorySelect.selected == 2)
+                    {
+                        pages.selected = "summary";
+                     }
 
             scrollHeadPanel.scroller.scrollTop = 0;
         });
@@ -129,7 +129,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var recommendationButton = document.querySelector('#recommendationButton');
 
         recommendationButton.addEventListener('click', function(event){
-            querySubmission();
+            var reg = /\[|\]/g;
+            if (app.title.match(reg)>0){
+                var toaster = document.querySelector('#toaster');
+                toaster.show();
+            }
+            else
+                querySubmission();
         });
 
         var searchedItems;

@@ -272,7 +272,7 @@ module.exports=function(app){
 
                     if (entities.COUNTRY.length == 0 && entities.GEOLOGICALOBJ == 0)
                     {
-                        tasks.unique=disaster_events.concat(entities.LOCATION[0].concept.id);
+                        tasks.country=disaster_events.concat(entities.LOCATION[0].concept.id);
                     }
                     else {
                         //query #1 contains the concept_ids of country and event_disaster
