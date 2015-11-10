@@ -7,8 +7,6 @@ module.exports=function(app){
     var graph_id = '/graphs/wikipedia/en-20120601';
     app.locals.graph_id = graph_id;
 
-    var concept_list;
-
     var async = require('async');
     var extend = require('extend');
 

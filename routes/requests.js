@@ -53,7 +53,7 @@ module.exports= function(app){
             if (!err){
                 res.redirect(body.fields.url);
             }
-                res.status(404).send({status:err});
+                res.status(404).send(err);
         });
 
     });

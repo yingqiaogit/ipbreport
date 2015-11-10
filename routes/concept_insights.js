@@ -31,6 +31,8 @@ module.exports = function(app){
        }
     });
 
+    setCorpusId('mytest');
+
     var getCorpusParam = function(){
 
         var corpus_id = getCorpusId();
@@ -75,10 +77,10 @@ module.exports = function(app){
                 if (err) {
                     // will load it later
                     console.log("error" + JSON.stringify(err));
-                    res.status(500).send({status:operation});
+                    res.status(500).send(err);
                 } else {
-                    console.log("correct" + response);
-                    res.status(200).send({status:'OK'});
+                    console.log("correct" + JSON.stringify(response));
+                    res.status(200).send(response);
                 }
             });
         }else{
@@ -98,15 +100,15 @@ module.exports = function(app){
 
             console.log(JSON.stringify(params));
 
-            params.corpus_id +="/process_state";
+            params.corpus +="/processing_state";
 
             concept_insights.corpora.getCorpus(params, function (err, response) {
                 if (err) {
                     // will load it later
                     console.log("error" + JSON.stringify(err));
-                    res.status(500).send({status:operation});
+                    res.status(500).send(err);
                 } else {
-                    console.log("correct" + response);
+                    console.log("correct" + JSON.stringify(response));
                     res.json(response);
                 }
             });
@@ -156,10 +158,10 @@ module.exports = function(app){
                 if (err) {
                     // will load it later
                     console.log("error" + JSON.stringify(err));
-                    res.status(500).send({status:JSON.stringify(err)});
+                    res.status(500).send(err);
                 } else {
-                    console.log("correct" + response);
-                    res.status(200).send({status:'OK'});
+                    console.log("correct" + JSON.stringify(response));
+                    res.status(200).send(response);
                 }
             });
         }else{
@@ -228,7 +230,7 @@ module.exports = function(app){
                     function(callback) {
 
                         var params = {
-                            id: corpus_id,
+                            id: corpus_id+'/documents/' + document_id,
 
                             // document data
                             document: {
@@ -246,9 +248,9 @@ module.exports = function(app){
                             } else {
                                 console.log("document " + document_label + " created");
                             }
+                            callback();
                         });
 
-                        callback();
                     },
 
                     //retrieve the mentions and their relationship by using relationship_extraction
@@ -299,7 +301,7 @@ module.exports = function(app){
         //the primary key is auto generated to store multiple sets of answers of a user
         var disaster_db= app.locals.dbs.disasters.handler;
 
-        disaster_db.insert(doc, doc.id, function (err, body) {
+        disaster_db.insert(doc, id, function (err, body) {
             if (!err)
                 console.log('stored correctly with information as ' + body);
             else
