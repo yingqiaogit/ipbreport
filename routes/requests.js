@@ -4,6 +4,8 @@
 
 module.exports= function(app){
 
+    var disasters_db = app.locals.dbs.disasters.handler;
+
     //retrieve the doc url by id in the request
     app.get('/request', function(req,res){
 
@@ -12,9 +14,8 @@ module.exports= function(app){
 
         console.log("doc id" + doc_id);
 
-        var disasterdb = app.locals.dbs.disasters.handler;
-
-        /*var indexspec = app.locals.dbs.disasters.indexes;
+        /*
+        var indexspec = app.locals.dbs.disasters.indexes;
 
         //retrieve the document from the disasters db by the id
         var query = {
@@ -30,17 +31,13 @@ module.exports= function(app){
             "skip":0
         };
 
-        disasterdb.find(indexspec.disaster, query, function (err, results) {
+        disasters_db.find(indexspec.disaster, query, function (err, results) {
             if (err) {
                 console.log("retrieve error" + JSON.stringify(err));
                 res.json(null);
             } else {
                 console.log("number of document is %d, first result is %s ", results.docs.length, JSON.stringify(results.docs[0]));
                 console.log("time of the submissions")
-                /*
-                 for (var doc in results.docs){
-                 console.log (results.docs[doc].formdata.timestamp.end + " ");
-                 }
 
                 if (results.docs.length) {
                     var url = results.docs[0].fields.url;
@@ -48,16 +45,16 @@ module.exports= function(app){
                 }
                 else
                     res.json(null);
-                //res.json(results.formdata);
-            }
-        });*/
+             }
+        });
+        */
 
-        disasterdb.get(doc_id, {revs_info:true}, function(err,body){
+        disasters_db.get(doc_id, {revs_info:true}, function(err,body){
             if (!err){
 
                 res.redirect(body.fields.url);
             }
-                res.status(404).send({status:'error'});
+                res.status(404).send({status:err});
         });
 
     });

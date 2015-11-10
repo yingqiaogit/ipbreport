@@ -111,7 +111,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </section>
 
                     <section data-route="recommendation" animateInitialSelection="true" id="recommendationSec">
-                        <div class="subject">Your text</div>
+                        <div class="subject">Your search</div>
                         <paper-material elevation="1">
                             <div class="subject">{{title}}</div>
                             <div calss="ratinginfo">{{description}}</div>
@@ -131,14 +131,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                     <section data-route="similarityanalysis" id="similarityanalysis">
 
-                        <div class="subject ">Similarity Analysis </div>
-                        <paper-dropdown-menu label="Seach Text">
-                            <paper-menu id="searchtextselector" class="dropdown-content" selected="0">
-                                <template is="dom-repeat" items="{{searchedItems}}" as="searchedItem">
-                                    <paper-item>{{searchedItem}}</paper-item>
+                        <paper-dropdown-menu label="Select a query">
+                            <paper-menu id="titleselector" class="dropdown-content" selected="0">
+                                <template is="dom-repeat" items="{{searchedItems}}">
+                                    <paper-item>{{item.title}}</paper-item>
                                 </template>
                             </paper-menu>
                         </paper-dropdown-menu>
+
+                        <paper-material elevation="1">
+                            <div class="subject">{{selectedTitle}}</div>
+                            <div calss="ratinginfo">{{selectedDescription}}</div>
+                        </paper-material>
 
                         <paper-material>
                             <google-map map="{{map}}" disableDefaultUI latitude="34.1030032" longitude="-118.4104684" fit-to-markers fitToMarkers>
@@ -153,10 +157,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 <table>
                                     <!-- Define the columns -->
                                     <col name="rank" header-text="Rank" width="48">
-                                    <col name="location" header-text="Location">
-                                    <col name="disasterType" header-text="Disaster Type">
-                                    <col name="geoFeatures" header-text="Geographical Features">
-                                    <col name="total" header-text="Total">
+                                       <col name="title" header-text="Title">
+                                            <col name="country" header-text="Location">
+                                                <col name="geologicalobj" header-text="Geological Objects">
+                                                    <col name="total" header-text="Total">
                                 </table>
                             </v-grid>
                         </paper-material>
@@ -164,10 +168,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                     <iron-ajax method="POST" id="queryCall" url="/query/submit" contentType="application/json" handle-as="json" debounce-duration="300">
 
-                    <iron-ajax method="GET" id="getCandidateCall" contentType="application/json" handle-as="json" debounce-duration="300">
+                    <iron-ajax method="GET" id="retrieveTitlesCall" url="/query/titles" contentType="application/json" handle-as="json" debounce-duration="300">
                     </iron-ajax>
 
-                    <iron-ajax method="GET" id="formRetrieveCall" url="/survey/data" contentType="application/json" handle-as="json" debounce-duration="300">
+                    <iron-ajax method="GET" id="retrieveFoundListCall" url="{{retrieveFoundListUrl}}" contentType="application/json" handle-as="json" debounce-duration="300">
                     </iron-ajax>
 
 

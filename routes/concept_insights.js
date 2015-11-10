@@ -16,6 +16,8 @@ module.exports = function(app){
 
     var corpus_id;
 
+    var mylib = require('/mylib.js');
+
     concept_insights.accounts.getAccountsInfo(null, function(err, response){
        if (err)
             console.log(err);
@@ -23,6 +25,7 @@ module.exports = function(app){
            console.log(JSON.stringify(response));
            account_id = response.accounts[0].account_id;
            console.log(account_id);
+
            //create a corpus
            create_corpus();
        }
@@ -50,6 +53,7 @@ module.exports = function(app){
             };
 
             console.log(JSON.stringify(params));
+
             concept_insights.corpora.createCorpus(params,function(err, response){
                 if (err)
                 {
@@ -58,9 +62,7 @@ module.exports = function(app){
                     console.log("error" + JSON.stringify(err));
                     return;
                 }
-
                 console.log("correct" + response);
-
             });
         }
     };
@@ -139,10 +141,6 @@ module.exports = function(app){
 
                 async.parallel(
                 [
-                    function(callback){
-                        callback();
-                    },
-                    /*
                     function(callback) {
 
                         var params = {
@@ -168,7 +166,7 @@ module.exports = function(app){
 
                         callback();
                     },
-                    */
+
                     //retrieve the mentions and their relationship by using relationship_extraction
                     // and stored in the document in the db
                     function(callback) {
@@ -179,24 +177,23 @@ module.exports = function(app){
                             function(err, response) {
                                 if (err) {
                                     console.log('error:', err);
-                                    res.status(400).send({error: "bad request"});
                                 }
                                 else {
                                     console.log(JSON.stringify(response));
-                                    callback();
                                 }
+
+                                var concepts = mylib.reorganizeEntity(response.doc.entities.entity);
+                                extend(document, {entities: concepts});
+                                callback();
                             });
                     }
-
-
                 ], function(err) {
                         //store the meta data in the db
                         //one disaster may have multiple documents
                         //so, the disaster ID should be an index
                         //the id of documents in the db is auto-generated
                         //one document in the db is the whole "data" field retrieved from the reliefWeb
-
-                        //store_doc_db(retrieved_data, "headline", "reliefWeb", document_id);
+                        store_doc_db(retrieved_data, "headline", "reliefWeb", document_id);
                 });
             });
         });
@@ -211,15 +208,6 @@ module.exports = function(app){
         doc.recorded_at=new Date().getTime();
 
         doc.formated_time = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
-        /*the data is stored as
-         {
-         token:     //token as index, for the sigined user, the token is the user_token
-         status:    //submit or inprogress
-         formdata: {    //the data received from client
-
-         }
-         }
-         */
         //store the doc in db
         console.log('store the doc' + JSON.stringify(doc));
         console.log('at consept insights, id is ' + id);

@@ -81,17 +81,21 @@ module.exports=function(app){
     //retrieve all of the titles from the doc
     app.get('/query/titles',function(req,res){
 
-        query_db.list(function(err,body){
+        query_db.list({include_docs:true},function(err,body){
             if (!err){
 
+                //should contain _id with the title
                 var titles=[];
 
                 body.rows.forEach(function(doc){
-
-                    titles.push(doc.title);
+                    var element = {};
+                    element.title = doc.doc.title;
+                    element.key = doc.key;
+                    titles.push(element);
                 });
 
                 res.json({titles:titles});
+
             }else
                 res.status(500).send({status:'error'});
 
@@ -104,18 +108,23 @@ module.exports=function(app){
     //retrieve the doc with the _id
     //body
     //{ _id: doc_id}
-    app.get('/query/doc', function(req,res){
+    app.get('/query/found', function(req,res){
 
-        var doc_id = JSON.parse(Object.keys(req.body)[0]);
+        var doc_id = req.query.id;
 
-        query_db.get(doc_id._id, {revs_info:true}, function(err,body){
+        console.log("received id " + doc_id);
+
+        query_db.get(doc_id, {revs_info:true}, function(err,body){
             if (!err){
                 //return the found list of the doc
                 console.log("retieved body " + JSON.stringify(body));
 
-                res.json({found:body.found});
+                res.json({title: body.title,
+                    description:body.description,
+                    found:body.found});
+            }else {
+                res.status(404).send({status: err});
             }
-                res.status(500).send({status:'error'});
 
         } );
 

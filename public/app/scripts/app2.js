@@ -132,15 +132,56 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             querySubmission();
         });
 
-        var searchedItems=["Flood - Nov. 3rd", "Flood - Apr.5"];
-        app.searchedItems = searchedItems;
+        var searchedItems;
 
-        var textSelector = document.querySelector('#searchtextselector');
+        var retrieveTitlesCall = document.querySelector('#retrieveTitlesCall');
 
-        textSelector.addEventListener('iron-select', function(event){
+        retrieveTitlesCall.addEventListener('response',function(event){
 
-            console.log(textSelector.selected);
-        })
+            searchedItems = event.detail.response.titles;
+
+            console.log("titles:" + JSON.stringify(searchedItems));
+            app.searchedItems = searchedItems;
+        });
+
+        var openAnalysis=function(){
+            retrieveTitlesCall.generateRequest();
+        };
+
+        var titleSelector = document.querySelector('#titleselector');
+
+        var retrieveFoundListCall = document.querySelector('#retrieveFoundListCall')
+
+        titleSelector.addEventListener('iron-select', function(event){
+
+            console.log(titleSelector.selected);
+
+            var id = searchedItems[titleSelector.selected].key;
+
+            //compose a call to retrieve the found list
+            console.log("selected id is " + id);
+
+            app.retrieveFoundListUrl = '/query/found?id='+id;
+
+            retrieveFoundListCall.generateRequest();
+
+        });
+
+        var grid = document.querySelector("v-grid");
+
+        retrieveFoundListCall.addEventListener('response', function(event){
+
+            app.selectedTitile = event.detail.response.title;
+            app.selectedDescription = event.detail.response.description;
+
+            grid.data.source = event.detail.response.found;
+
+            grid.columns[0].renderer = function (cell) {
+                    cell.element.innerHTML = cell.row.index;
+            }
+
+        });
+
     });
 
 })();
