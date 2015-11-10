@@ -14,9 +14,11 @@ module.exports = function(app){
 
     var account_id;
 
-    var corpus_id;
+    var mylib = require('../mylib.js');
 
-    var mylib = require('/mylib.js');
+    var extend = require('extend');
+
+    console.log("mylib " + JSON.stringify(mylib));
 
     concept_insights.accounts.getAccountsInfo(null, function(err, response){
        if (err)
@@ -26,65 +28,144 @@ module.exports = function(app){
            account_id = response.accounts[0].account_id;
            console.log(account_id);
 
-           //create a corpus
-           create_corpus();
        }
-
     });
 
-    var create_corpus = function(){
-        if (account_id){
+    var getCorpusParam = function(){
 
-            corpus_id = "/corpora/"+ account_id+ "/mytest";
+        var corpus_id = getCorpusId();
 
-            app.locals.corpus_id = corpus_id;
+        var params = {
+            access: "public",
+            corpus: corpus_id,
+            user: app.locals.conceptInsightsUsername,
+            limit:0,
+            body: {
+                "access": "public",
+                "users": [{
+                    "uid": app.locals.conceptInsightsUsername,
+                    "permission": "ReadWriteAdmin"
+                }]
+            }
+        };
+        return params;
+    }
 
-            var params = {
-                access: "public",
-                corpus: corpus_id,
-                limit:0,
-                body: {
-                    "access": "public",
-                    "users": [{
-                        "uid": app.locals.conceptInsightsUsername,
-                        "permission": "ReadWriteAdmin"
-                    }]
-                }
-            };
+    var getCorpusId = function(){
+        return app.locals.corpus_id;
+    }
+
+    var setCorpusId = function(name){
+        var corpus_id = '/corpora/' + account_id + '/' + name;
+        app.locals.corpus_id = corpus_id;
+    }
+
+    //create a corpus with a name /corpus?name=mytest
+    app.post('/corpus',function(req,res){
+
+        if (account_id&&req.query.name){
+
+            setCorpusId(req.query.name);
+
+            var params = getCorpusParam();
 
             console.log(JSON.stringify(params));
 
-            concept_insights.corpora.createCorpus(params,function(err, response){
-                if (err)
-                {
+            concept_insights.corpora.createCorpus(params, function (err, response) {
+                if (err) {
                     // will load it later
-                    load_corpus();
                     console.log("error" + JSON.stringify(err));
-                    return;
+                    res.status(500).send({status:operation});
+                } else {
+                    console.log("correct" + response);
+                    res.status(200).send({status:'OK'});
                 }
-                console.log("correct" + response);
             });
+        }else{
+            res.status(400).send({status:'invalid corpus name'});
         }
-    };
+    });
 
-    var load_corpus=function() {
-        //get the data from relief web
+    //get the state of processing of a corpus with name
+    //  /corpus?name=mytest
+    app.get('/corpus',function(req,res){
+
+        if (account_id&&req.query.name){
+
+            setCorpusId(req.query.name);
+
+            var params = getCorpusParam();
+
+            console.log(JSON.stringify(params));
+
+            params.corpus_id +="/process_state";
+
+            concept_insights.corpora.getCorpus(params, function (err, response) {
+                if (err) {
+                    // will load it later
+                    console.log("error" + JSON.stringify(err));
+                    res.status(500).send({status:operation});
+                } else {
+                    console.log("correct" + response);
+                    res.json(response);
+                }
+            });
+        }else{
+            res.status(400).send({status:'invalid corpus name'});
+        }
+    });
+
+    //load document to the corpus
+    // /corpus?name=mytest&type=Flood&start=30&limit=15
+    app.put('/corpus', function(req,res){
 
         var disasterUrl = "http://api.rwlabs.org/v1/disasters";
 
-        var type = "Flood";
+        if (req.query.name)
+            setCorpusId(req.query.name);
 
-        var start = 30;
-
-        var limit = 2;
+        var type = req.query.type;
 
         //retrieve the 200 documents start from 30,
         //the first 30 documents will be used as test data
-        var document_list;
+        var start = req.query.start;
+        var limit = req.query.limit;
 
-        get_document_ids(disasterUrl, type, start, limit, store_document);
+        if (getCorpusId()&&type&&start&&limit)
+        {
+            get_document_ids(disasterUrl, type, start, limit, store_document);
+            res.status(200).send({status:'OK'});
+        }
+        else
+        {
+            res.status(500).send({status:'invalid parameters'});
+        }
+    });
 
-    };
+    //delete the corpus with a name /corpus?name=mytest
+    app.delete('/corpus',function(req,res){
+        if (account_id&&req.query.name){
+
+            setCorpusId(req.query.name);
+
+            var params = getCorpusParam();
+
+            console.log(JSON.stringify(params));
+
+            concept_insights.corpora.deleteCorpus(params, function (err, response) {
+                if (err) {
+                    // will load it later
+                    console.log("error" + JSON.stringify(err));
+                    res.status(500).send({status:JSON.stringify(err)});
+                } else {
+                    console.log("correct" + response);
+                    res.status(200).send({status:'OK'});
+                }
+            });
+        }else{
+            res.status(400).send({status:'invalid corpus name'});
+        }
+    });
 
     var get_document_ids= function(disasterUrl, type, start, limit, next){
 
@@ -131,7 +212,8 @@ module.exports = function(app){
                 if (error)
                     return console.log(error);
 
-                var retrieved_fields = JSON.parse(body).data[0].fields;
+                var retrieved_data = JSON.parse(body).data[0];
+                var retrieved_fields = retrieved_data.fields;
                 var document = retrieved_fields.description;
 
                 console.log(document);
@@ -139,12 +221,14 @@ module.exports = function(app){
                 var document_id = retrieved_fields.id;
                 var document_label = retrieved_fields.name;
 
+                var corpus_id = getCorpusId();
+
                 async.parallel(
                 [
                     function(callback) {
 
                         var params = {
-                            id: corpus_id + '/documents/' + document_id,
+                            id: corpus_id,
 
                             // document data
                             document: {
@@ -182,8 +266,8 @@ module.exports = function(app){
                                     console.log(JSON.stringify(response));
                                 }
 
-                                var concepts = mylib.reorganizeEntity(response.doc.entities.entity);
-                                extend(document, {entities: concepts});
+                                var concepts = mylib.reorganizeEntities(response.doc.entities.entity);
+                                extend(retrieved_data, {entities: concepts});
                                 callback();
                             });
                     }
@@ -272,5 +356,4 @@ module.exports = function(app){
             });
         }
     )
-
 }

@@ -51,7 +51,6 @@ module.exports= function(app){
 
         disasters_db.get(doc_id, {revs_info:true}, function(err,body){
             if (!err){
-
                 res.redirect(body.fields.url);
             }
                 res.status(404).send({status:err});

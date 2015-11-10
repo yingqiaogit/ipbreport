@@ -1,14 +1,12 @@
 /**
  * Created by a on 11/10/2015.
  */
-module.exports = myLib;
 
+var x = 5;
 
-function myLib(){
-
-    this.reorganizeEntity = reorganizeEntitiesFrom;
-
-}
+var addX = function(value) {
+    return value + x;
+};
 
 var reorganizeEntitiesFrom= function(original){
     var organized = {
@@ -44,3 +42,7 @@ var reorganizeEntitiesFrom= function(original){
 
     return organized;
 };
+
+module.exports.x = x;
+module.exports.addX = addX;
+module.exports.reorganizeEntities = reorganizeEntitiesFrom;
