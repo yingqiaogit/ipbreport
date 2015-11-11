@@ -29,3 +29,4 @@ node_modules
 
 # Don't log .env file containing passwords
 *.env
+.env
