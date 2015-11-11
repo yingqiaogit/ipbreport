@@ -148,7 +148,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                         <paper-material>
                             <google-map map="{{map}}" disableDefaultUI latitude="34.1030032" longitude="-118.4104684" fit-to-markers fitToMarkers>
-                                <template is="dom-repeat" items="[[response]]">
+                                <template is="dom-repeat" items="[[locationItems]]">
                                     <google-map-marker map={{map}} latitude="{{item.lat}}" longitude="{{item.lng}}">
                                     </google-map-marker>
                                 </template>

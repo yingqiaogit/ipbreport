@@ -173,6 +173,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             app.selectedTitile = event.detail.response.title;
             app.selectedDescription = event.detail.response.description;
 
+            app.locationItems = event.detail.response.found;
             grid.data.source = event.detail.response.found;
 
             grid.columns[0].renderer = function (cell) {

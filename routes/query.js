@@ -377,7 +377,7 @@ module.exports=function(app){
 
                         async.forEach(query_doc.found, function(doc, callback){
 
-                            disaster_db.get(doc.id, function(err,body){
+                            disaster_db.get(doc.id.toString(), function(err,body){
                                if (!err){
 
                                    doc.lat = body.fields.primary_country.location[0];

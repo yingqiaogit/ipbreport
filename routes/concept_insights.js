@@ -299,7 +299,9 @@ module.exports = function(app){
         //the primary key is auto generated to store multiple sets of answers of a user
         var disaster_db= app.locals.dbs.disasters.handler;
 
-        disaster_db.insert(doc, id, function (err, body) {
+        extend(doc, {_id:id.toString()});
+
+        disaster_db.insert(doc, function (err, body) {
             if (!err)
                 console.log('stored correctly with information as ' + body);
             else

@@ -10,7 +10,7 @@ require('dotenv').load();
 // for more info, see: http://expressjs.com
 var express = require('express');
 var https = require('https');
-var JSON = require('JSON');
+var JSON = require('json');
 
 // cfenv provides access to your Cloud Foundry environment
 // for more info, see: https://www.npmjs.com/package/cfenv
