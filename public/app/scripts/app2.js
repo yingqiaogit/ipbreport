@@ -46,19 +46,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
         */
 
-        var nextButtons = document.querySelectorAll('paper-fab.nextButton');
-
-        var scrollHeadPanel = document.querySelector('paper-scroll-header-panel');
-
-        Array.prototype.forEach.call(nextButtons, function (button) {
-            button.addEventListener('click', function () {
-                    app.switch();
-
-                    //scrollup
-                    scrollHeadPanel.scroller.scrollTop = 0;
-
-            });
-        });
+        var scrollHeadPanel = document.querySelectorAll('paper-scroll-header-panel');
 
         var categorySelect = document.querySelector('#categoryTab');
 
@@ -129,13 +117,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var recommendationButton = document.querySelector('#recommendationButton');
 
         recommendationButton.addEventListener('click', function(event){
-            var reg = /\[|\]/g;
-            if (app.title.match(reg)>0){
+            var reg = /\[|\]/;
+            if (app.title.match(reg)||app.description.match(reg)){
                 var toaster = document.querySelector('#toaster');
                 toaster.show();
             }
-            else
+            else {
                 querySubmission();
+                app.switch();
+
+                //scrollup
+                scrollHeadPanel.scroller.scrollTop = 0;
+            }
         });
 
         var searchedItems;

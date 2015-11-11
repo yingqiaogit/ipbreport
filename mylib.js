@@ -2,12 +2,6 @@
  * Created by a on 11/10/2015.
  */
 
-var x = 5;
-
-var addX = function(value) {
-    return value + x;
-};
-
 var reorganizeEntitiesFrom= function(original){
     var organized = {
         GPE:[],
@@ -43,6 +37,4 @@ var reorganizeEntitiesFrom= function(original){
     return organized;
 };
 
-module.exports.x = x;
-module.exports.addX = addX;
 module.exports.reorganizeEntities = reorganizeEntitiesFrom;
