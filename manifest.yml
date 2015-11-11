@@ -1,8 +1,16 @@
 applications:
-- disk_quota: 1024M
-  host: ipbreport
-  name: ipbreport
-  path: .
-  domain: mybluemix.net
-  instances: 1
+- path: .
   memory: 256M
+  instances: 1
+  domain: mybluemix.net
+  name: ipbreport
+  host: ipbreport
+  disk_quota: 1024M
+  services:
+  - Language Translation-th
+  - Concept Insights-bn
+  - Natural Language Classifier-4e
+  - Relationship Extraction-a3
+  - AlchemyAPI-ja
+  - Cloudant NoSQL DB-rx
+  command: ipbreport
