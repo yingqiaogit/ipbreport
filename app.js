@@ -10,7 +10,7 @@ require('dotenv').load();
 // for more info, see: http://expressjs.com
 var express = require('express');
 var https = require('https');
-var JSON = require('json');
+var JSON = require('JSON');
 
 // cfenv provides access to your Cloud Foundry environment
 // for more info, see: https://www.npmjs.com/package/cfenv
@@ -55,7 +55,7 @@ var extractionCredential = {};
 var initExtractionCredential = function(){
 
   if (process.env.VCAP_SERVICES) {
-    var service = process.env.VCAP_SERVICES;
+    var services = process.env.VCAP_SERVICES;
 
     if (services.relationship_extraction) {
       var credentials = services.relationship_extraction.credentials;
@@ -88,9 +88,9 @@ var conceptInsightsCredentials = {};
 var initConceptInsightsCredentials=function(){
 
   if (process.env.VCAP_SERVICES) {
-    var service = process.env.VCAP_SERVICES;
+    var services = process.env.VCAP_SERVICES;
 
-    if (service.concept_insights) {
+    if (services.concept_insights) {
       var credentials = service.concept_insights.credentials;
       conceptInsightsCredentials.username = credentials.username;
       conceptInsightsCredentials.password = credentials.password;
