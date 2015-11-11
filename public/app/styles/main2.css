@@ -1,0 +1,108 @@
+/*
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+*/
+
+body {
+    background: #F5F5F5;
+    font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: rgb(39, 39, 39);
+}
+
+google-map {
+    display: block;
+    height: 400px;
+}
+
+.rate {
+    display: table-cell;
+}
+
+.question {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.subject {
+    padding: 10px;
+    font-weight: bold;
+}
+
+.ratinginfo {
+    padding: 10px;
+}
+
+.infolist {
+    padding: 3px 40px;
+}
+
+.choice {
+    display: block;
+}
+
+.nextButton {
+    position: relative;
+    float: right;
+    padding: 18px;
+}
+
+input:invalid {
+    border: 1px solid #900;
+}
+
+.error {
+    font-size: smaller;
+}
+
+.list {
+    padding-top: 12px;
+    background-color: white;
+    display: inline-block;
+    width: 240px;
+    height: 228px;
+    margin: 12px;
+    @apply(--shadow-elevation-2dp);
+}
+
+.photo {
+    max-height: 120px;
+}
+
+.label {
+    font-weight: bold;
+}
+
+.vslogo {
+    font-size: 14px;
+}
+
+.pol-widget {
+    border: none !important;
+    width: 400px;
+}
+
+.slide-example {
+     max-width: 95%;
+     height: auto;
+     padding: 18px 30px
+}
+
+.pol-divider {
+    padding: 10px;
+}
+
+.item:focus {
+    outline: 0;
+    border-color: #666;
+}
+
+.pad {
+    padding: 0 16px;
+    @apply(--layout-flex);
+    @apply(--layout-vertical);
+}

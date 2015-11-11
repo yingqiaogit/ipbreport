@@ -1,0 +1,81 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
+
+<dom-module id="language-selector">
+  <style>
+    :host {
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      h1.paper-font-display1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+  <template>
+    <h1 class="paper-font-display1"><span>{{selectedLanguage}}</span></h1>
+    <span class="paper-font-body2">Select language to change the greeting.</span>
+
+    <!-- display the greeting in different languages   -->
+    <!-- call the language translator for getting the supported language -->
+
+    <paper-radio-group id="languagegroup" selected='en'>
+      <template is="dom-repeat" items="{{languages}}">
+        <paper-radio-button name ="{{item.abr}}"  value="{{item.des}}" on-click="buttonHandler" lang="{{item.abr}}"><span lang="{{item.abr}}">{{item.des}}</span></paper-radio-button>
+      </template>
+      <paper-radio-button name ="en"  value="I select English" on-click="buttonHandler" lang="en"><span lang="en">I select English</span></paper-radio-button>
+      <paper-radio-button name ="fr"  value="je parle français" on-click="buttonHandler" lang="fr"><span lang="fr">je parle français</span></paper-radio-button>
+      <paper-radio-button name ="zh-Hans"  value="" on-click="buttonHandler" lang="zh-Hans"><span lang="zh-Hans"></span></paper-radio-button>
+    </paper-radio-group>
+
+    <p></p>
+    <!-- ajax call for retrieving the language -->
+    <iron-ajax method="GET" id="getgreetings" contentType="application/json" handle-as="json" on-respone="handleResponse" debounce-duration="300">
+    </iron-ajax>
+
+  </template>
+
+  <script>
+    (function() {
+      Polymer({
+        is: 'language-selector',
+
+        properties: {
+          selectedLanguage:{
+            type:String,
+            value:'English',
+            notify: true
+          },
+          languages:{
+            type: Array,
+            value: [
+              {abr:'en',des:'I select English'},
+              {abr:'fr', des: 'je parle français'},
+              {abr:'zh-Hans', des: '?????'}]
+          }
+        },
+
+        buttonHandler: function(event){
+          var group = document.getElementById('languagegroup');
+          this.$.selectedLanguage= group.selectedItem.value;
+
+          //fire a custom event
+          this.fire('langchanged',{languageshort:group.selectedItem.name,
+                                   languagelong:group.selectedItem.value });
+
+        }
+      });
+    })();
+  </script>
+
+</dom-module>

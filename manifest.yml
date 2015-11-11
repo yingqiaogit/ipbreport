@@ -1,0 +1,12 @@
+applications:
+- path: .
+  memory: 1024M
+  instances: 1
+  domain: mybluemix.net
+  name: uploadingtest
+  host: uploadingtest
+  disk_quota: 1024M
+  services:
+  - Concept Insights-bn
+  - Relationship Extraction-a3
+  - Cloudant NoSQL DB-rx

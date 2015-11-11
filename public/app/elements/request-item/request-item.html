@@ -1,0 +1,62 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+
+<dom-module id="request-item">
+  <style>
+    :host {
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      h1.paper-font-display1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+  <template>
+    <h1 class="paper-font-display1"><span>{{itemTitle}}</span></h1>
+    <span class="paper-font-body2">{{itemSubtitle}}</span>
+
+    <!-- display the greeting in different languages   -->
+    <!-- call the language translator for getting the supported language -->
+    <paper-textarea label="request text">{{requestText}}</paper-textarea>
+
+
+  </template>
+
+  <script>
+    (function() {
+      Polymer({
+        is: 'request-item',
+
+        properties: {
+          itemTitle:{
+            type:String,
+            value:'Could you describe your current situation to us?',
+            notify: true
+          },
+          itemSubtitle:{
+            type: String,
+            value: 'For example, where are the people in your community, how do they feel, and how many people are waiting for supplies in your community',
+            notify:true
+          },
+          requestText:{
+            type:String,
+            value: null
+          }
+        }
+
+      });
+    })();
+  </script>
+
+</dom-module>

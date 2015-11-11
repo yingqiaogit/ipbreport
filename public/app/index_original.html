@@ -1,0 +1,237 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Disaster Information Search" />
+    <title>Disaster Information Searching</title>
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+    <!-- Chrome for Android theme color -->
+    <meta name="theme-color" content="#303F9F">
+
+    <!-- Web Application Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Tile color for Win8 -->
+    <meta name="msapplication-TileColor" content="#3372DF">
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Disaster Information Search">
+    <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Disaster Information Search">
+    <link rel="apple-touch-icon" href="./images/touch/apple-touch-icon.png">
+
+    <!-- Tile icon for Win8 (144x144) -->
+    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+
+    <!-- build:css styles/main.css -->
+    <link rel="stylesheet" href="../app/styles/main2.css">
+    <!-- endbuild-->
+
+    <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
+    <script src="../app/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <!-- endbuild -->
+
+    <!-- will be replaced with elements/elements.vulcanized.html -->
+    <link rel="import" href="../app/elements/elements2.html">
+    <!-- endreplace-->
+</head>
+
+<body unresolved class="fullbleed layout vertical">
+    <span id="browser-sync-binding"></span>
+    <template is="dom-bind" id="app">
+
+        <paper-scroll-header-panel class="flex" fixed="false">
+
+
+            <!-- Main Toolbar -->
+            <paper-toolbar class="tall" id="mainToolbar">
+
+                <span class="flex"></span>
+
+                <!-- Application name -->
+                <div class="middle paper-font-display2 app-name">
+                    Disaster Information Search
+                </div>
+
+                <!-- Application sub title -->
+                <div class="middle">
+                    with Concept-Relationship-Based Ranking
+                </div>
+
+                <!-- Toolbar icons -->
+
+                <paper-tabs id="categoryTab" selected="0" class="bottom self-end" style=" margin-bottom:0;color:white;font-size:14px;">
+                    <paper-tab>SEARCH</paper-tab>
+                    <paper-tab>ANALYSIS</paper-tab>
+                    <paper-tab>SUMMARY</paper-tab>
+                </paper-tabs>
+
+                <!--                <div class="bottom flex self-start"></div>-->
+            </paper-toolbar>
+
+
+            <!-- Main Content -->
+            <div class="content" id="mainContent">
+                <iron-pages attr-for-selected="data-route" selected="home">
+
+                    <section data-route="home" animateInitialSelection="true" id="home">
+                        <div class="subject"> You may search the information of disasters here. </div>
+
+                        <paper-material elevation="1">
+                            <p class="paper-font-body2">You may enter the title of the disaster. The title is a label of the information of a disaster.</p>
+                                <paper-input id="titleInput" placeholder="my title" value="{{title}}"></paper-input>
+                        </paper-material>
+
+                        <paper-material elevation="1">
+                            <p class="paper-font-body2">You may enter the description of the disaster in sentences here. The disaster could be the one that occurred before or is occurring. </p>
+                                <paper-textarea id="descriptionInput" value="{{description}}"></paper-textarea>
+                        </paper-material>
+
+                        <paper-fab id="recommendationButton" class="nextButton" icon="file-upload"></paper-fab>
+                        <p class="nextButton">Search &nbsp </p>
+                        <paper-toast id="toaster" text="{{toaster}}"></paper-toast>
+
+                    </section>
+
+                    <section data-route="recommendation" animateInitialSelection="true" id="recommendationSec">
+                        <div class="subject">Your search</div>
+                        <paper-material elevation="1">
+                            <div class="subject">{{title}}</div>
+                            <div calss="ratinginfo">{{description}}</div>
+                        </paper-material>
+
+                        <div class="subject">Search Results</div>
+                        <paper-material elevation="1">
+                            <ul>
+                                <template is="dom-repeat" items="{{list}}">
+                                    <li><a href="{{item.url}}" target="_blank">{{item.label}}</a></li>
+                                    <br>
+                                </template>
+                            </ul>
+
+                        </paper-material>
+                    </section>
+
+                    <section data-route="similarityanalysis" id="similarityanalysis">
+
+                        <paper-dropdown-menu label="Select a query">
+                            <paper-menu id="titleselector" class="dropdown-content" selected="0">
+                                <template is="dom-repeat" items="{{searchedItems}}">
+                                    <paper-item>{{item.title}}</paper-item>
+                                </template>
+                            </paper-menu>
+                        </paper-dropdown-menu>
+
+                        <paper-material elevation="1">
+                            <div class="subject">{{selectedTitle}}</div>
+                            <div calss="ratinginfo">{{selectedDescription}}</div>
+                        </paper-material>
+
+                        <paper-material>
+                            <google-map map="{{map}}" fit-to-markers >
+                                <template is="dom-repeat" items="[[locationItems]]">
+                                    <google-map-marker map={{map}} latitude="{{item.lat}}" longitude="{{item.lng}}">
+                                    </google-map-marker>
+                                </template>
+                            </google-map>
+                        </paper-material>
+                        <paper-material>
+                            <v-grid selection-mode="disabled">
+                                <table>
+                                    <!-- Define the columns -->
+                                    <col name="rank" header-text="Rank" width="10">
+                                       <col name="label" header-text="Title">
+                                            <col name="country" header-text="Location">
+                                                <col name="geoobj" header-text="Geological Objects">
+                                                    <col name="total" header-text="Total">
+                                </table>
+                            </v-grid>
+                        </paper-material>
+                    </section>
+
+                    <section data-route="summary" animateInitialSelection="true" id="summarySec">
+
+                        <div class="subject">Features</div>
+                        <paper-material elevation="1">
+                            <ul>
+                                <li>This APP realizes a RESTful API which searches for disaster information in ReliefWeb</li> <br>
+                                <li>The search uses the concepts contained in a query</li> <br>
+                                <li>A query is a text document in English</li> <br>
+                                <li>The search returns the documents whose concepts are related to a query</li> <br>
+                                <li>The returned documents are ranked by their scores of concept relationship from the perspectives of two categories</li> <br>
+                                <li>Two concept categories are: location and geological object</li> <br>
+                            </ul>
+                        </paper-material>
+
+                        <div class="subject">Used Components</div>
+                        <paper-material elevation="1">
+                            <ul>
+                                <li>Node.js/Express.js</li> <br>
+                                <li>Polymer</li> <br>
+                                <li>Bluemix Instance</li> <br>
+                                <li>Concept Insights</li> <br>
+                                <li>Relationship Extraction</li> <br>
+                                <li>Cloudant NoSQL</li> <br>
+                            </ul>
+                        </paper-material>
+
+                        <div class="subject">Future Work</div>
+                        <paper-material elevation="1">
+                            <ul>
+                                <li>The search function may have a concept category on geographical feature</li> <br>
+                            </ul>
+                        </paper-material>
+
+                        <div class="subject">Acknowledgements</div>
+                        <paper-material elevation="1">
+                            <ul>
+                                <li>Denis Carriere, for the idea that inspired this project</li> <br>
+                                <li>Anton McConville, for lending elements to this project </li> <br>
+                                <li>Serena Pietruszka in DevPost, for supporting the development of this project</li> <br>
+                            </ul>
+                        </paper-material>
+
+                    </section>
+
+                    <iron-ajax method="POST" id="queryCall" url="/query/submit" contentType="application/json" handle-as="json" debounce-duration="300">
+
+                    <iron-ajax method="GET" id="retrieveTitlesCall" url="/query/titles" contentType="application/json" handle-as="json" debounce-duration="300">
+                    </iron-ajax>
+
+                    <iron-ajax method="GET" id="retrieveFoundListCall" url="{{retrieveFoundListUrl}}" contentType="application/json" handle-as="json" debounce-duration="300">
+                    </iron-ajax>
+
+
+                    </iron-ajax>
+
+                </iron-pages>
+
+            </div>
+        </paper-scroll-header-panel>
+
+    </template>
+    <!-- build:js scripts/app.js -->
+    <script src="../app/scripts/app2.js "></script>
+    <!-- endbuild-->
+</body>
+
+</html>
