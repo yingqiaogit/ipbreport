@@ -70,9 +70,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         var queryCall = document.querySelector('#queryCall');
 
+        var toaster = document.querySelector('#toaster');
+
         queryCall.addEventListener('response', function (e) {
             console.log("response from server" + JSON.stringify(e.detail.response));
             //prepare the data for the recommendationItems
+
+            if (e.detail.response.status)
+            {
+                //invalid input
+                app.toaster= e.detail.response.status;
+                toaster.show();
+                return;
+            }
 
             var results = e.detail.response.found;
 
@@ -86,12 +96,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             })
 
             app.list = list;
+            app.switch();
 
+            //scrollup
+            scrollHeadPanel.scroller.scrollTop = 0;
         });
 
         var querySubmission = function () {
 
             //fill in the enteredItem
+
             var text = [{
                 index: "",
                 name: app.title,
@@ -118,17 +132,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         recommendationButton.addEventListener('click', function(event){
             var reg = /\[|\]/;
-            if (app.title.match(reg)||app.description.match(reg)){
-                var toaster = document.querySelector('#toaster');
-                toaster.show();
-            }
-            else {
-                querySubmission();
-                app.switch();
 
-                //scrollup
-                scrollHeadPanel.scroller.scrollTop = 0;
+            if (!app.title || !app.description)
+            {
+                app.toaster= "Title or Description should not be empty";
+                toaster.show();
+                return;
             }
+
+            if (app.title.match(reg)||app.description.match(reg)){
+                app.toaster = "Please remove special characters such as [ or ]"
+                toaster.show();
+                return;
+            }
+
+            querySubmission();
+
         });
 
         var searchedItems;
@@ -173,7 +192,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             app.selectedTitile = event.detail.response.title;
             app.selectedDescription = event.detail.response.description;
 
-            app.locationItems = event.detail.response.found;
+            var location =[];
+            var found = event.detail.response.found;
+
+            if (!found)
+                return;
+
+            found.forEach(function(element){
+               var loc = {};
+               loc.lat = element.lat;
+               loc.lng = element.lng;
+               location.push(loc);
+            });
+
+            app.locationItems = location;
+
             grid.data.source = event.detail.response.found;
 
             grid.columns[0].renderer = function (cell) {

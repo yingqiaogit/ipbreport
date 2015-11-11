@@ -179,20 +179,27 @@ module.exports=function(app){
                             }
                             else {
                                 console.log("extracted results" + JSON.stringify(response));
-                                var entities = reorganizeEntitiesFrom(response.doc.entities.entity);
-                                //the entity has the form of
-                                /*
-                                entity = {
-                                   COUNTRY: [{"Somalia":1}]
-                                   LOCATION:[{"Jowhar district":0.75},{"Middle Shabelle region":0.49}],
-                                   GEOLOGICALOBJ: [{"Shabelle River":1}],
-                                   DATE: [{"September 2013": 1}]
-                                }
-                                */
-                                console.log(JSON.stringify(entities));
 
-                                extend(query_doc, {entities: entities});
-                                callback();
+                                if(response.doc.entities.entity)
+                                {
+                                    var entities = reorganizeEntitiesFrom(response.doc.entities.entity);
+
+                                    //the entity has the form of
+                                    /*
+                                     entity = {
+                                     COUNTRY: [{"Somalia":1}]
+                                     LOCATION:[{"Jowhar district":0.75},{"Middle Shabelle region":0.49}],
+                                     GEOLOGICALOBJ: [{"Shabelle River":1}],
+                                     DATE: [{"September 2013": 1}]
+                                     }
+                                     */
+                                    console.log(JSON.stringify(entities));
+
+                                    extend(query_doc, {entities: entities});
+                                    callback();
+                                }
+                                else
+                                    callback(new Error("invalid"));
                             }
                         });
                 }
@@ -200,6 +207,11 @@ module.exports=function(app){
 
             ], function(err){
                 //retrieve the recommended documents from the corpus
+
+                if (err)
+                    return res.status(200).send({status:"The description is not relevant to a disaster event"});
+
+                console.log("should not reach here");
 
                 var ids = [];
 
@@ -319,6 +331,11 @@ module.exports=function(app){
                         var list = [];
                         var ids = [];
 
+                        if(!results)
+                        {
+                            return res.status(200).send({status:"The input is not relevant to a disaster event"});
+                        }
+
                         Object.keys(results).forEach(function(key){
 
                             console.log("key" + key);
@@ -380,8 +397,8 @@ module.exports=function(app){
                             disaster_db.get(doc.id.toString(), function(err,body){
                                if (!err){
 
-                                   doc.lat = body.fields.primary_country.location[0];
-                                   doc.lng = body.fields.primary_country.location[1];
+                                   doc.lat = body.fields.primary_country.location[1];
+                                   doc.lng = body.fields.primary_country.location[0];
                                }
                                callback();
                             });

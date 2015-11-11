@@ -108,7 +108,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                         <paper-fab id="recommendationButton" class="nextButton" icon="file-upload"></paper-fab>
                         <p class="nextButton">Search &nbsp </p>
-                        <paper-toast id="toaster" text="Please remove special characters such as [ and ]"></paper-toast>
+                        <paper-toast id="toaster" text="{{toaster}}"></paper-toast>
 
                     </section>
 
@@ -147,7 +147,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         </paper-material>
 
                         <paper-material>
-                            <google-map map="{{map}}" disableDefaultUI latitude="34.1030032" longitude="-118.4104684" fit-to-markers fitToMarkers>
+                            <google-map map="{{map}}" fit-to-markers >
                                 <template is="dom-repeat" items="[[locationItems]]">
                                     <google-map-marker map={{map}} latitude="{{item.lat}}" longitude="{{item.lng}}">
                                     </google-map-marker>
