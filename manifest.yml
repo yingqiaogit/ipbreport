@@ -6,10 +6,4 @@ applications:
   name: ipbreport
   host: ipbreport
   disk_quota: 1024M
-  services:
-  - Language Translation-th
-  - Concept Insights-bn
-  - Relationship Extraction-a3
-  - AlchemyAPI-ja
-  - Cloudant NoSQL DB-rx
-  command: ipbreport
+
