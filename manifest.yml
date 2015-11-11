@@ -9,7 +9,6 @@ applications:
   services:
   - Language Translation-th
   - Concept Insights-bn
-  - Natural Language Classifier-4e
   - Relationship Extraction-a3
   - AlchemyAPI-ja
   - Cloudant NoSQL DB-rx
