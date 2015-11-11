@@ -55,10 +55,10 @@ var extractionCredential = {};
 var initExtractionCredential = function(){
 
   if (process.env.VCAP_SERVICES) {
-    var services = process.env.VCAP_SERVICES;
+    var service = JSON.parse(process.env.VCAP_SERVICES);
 
-    if (services.relationship_extraction) {
-      var credentials = services.relationship_extraction.credentials;
+    if (service.relationship_extraction) {
+      var credentials = service.relationship_extraction[0].credentials;
       extractionCredential.username = credentials.username;
       extractionCredential.password = credentials.password;
       extractionCredential.url = credentials.url;
@@ -88,10 +88,10 @@ var conceptInsightsCredentials = {};
 var initConceptInsightsCredentials=function(){
 
   if (process.env.VCAP_SERVICES) {
-    var services = process.env.VCAP_SERVICES;
+    var service = JSON.parse(process.env.VCAP_SERVICES);
 
-    if (services.concept_insights) {
-      var credentials = service.concept_insights.credentials;
+    if (service.concept_insights) {
+      var credentials = service.concept_insights[0].credentials;
       conceptInsightsCredentials.username = credentials.username;
       conceptInsightsCredentials.password = credentials.password;
       conceptInsightsCredentials.version = 'v2';
