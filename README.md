@@ -1,4 +1,4 @@
-# Node.js Application
+# Disaster Information Search with Concept-Based Ranking
 
-This application was created for participating in the Bluemixathon Challenge: http://devpost.com/software/disaster-information-search-with-concept-based-ranking
+This application was created for the Bluemixathon Challenge: http://devpost.com/software/disaster-information-search-with-concept-based-ranking
 

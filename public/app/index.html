@@ -34042,145 +34042,6 @@ Fired whenever the directions service returns a result.
       }
     }); // End Polymer prototype
 </script>
-<dom-module id="x-collapse" assetpath="elements/element-borrowed/">
-  <template>
-    <style>
-      :host {
-        @apply(--layout-fit);
-        @apply(--layout-vertical);
-        @apply(--paper-font-common-base);
-      }
-
-      paper-toolbar {
-        background: var(--google-green-700);
-        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-        font-weight: bold;
-        z-index: 1;
-      }
-
-      paper-toolbar paper-icon-button {
-        --paper-icon-button-ink-color: white;
-      }
-
-      iron-list {
-        background-color: var(--paper-grey-200, #eee);
-        padding-top: 1px;
-        padding-bottom: 16px;
-        --iron-list-items-container: {
-          max-width: 800px;
-          margin: auto;
-          margin-top: 60px;
-          margin-bottom: 60px;
-          border-bottom: 1px solid #ddd;
-        };
-      }
-
-      .item {
-        @apply(--layout-horizontal);
-        padding: 20px;
-        background-color: white;
-        border: 1px solid #ddd;
-
-        cursor: pointer;
-        margin-bottom: 10px;
-      }
-
-      .item:focus {
-        outline: 0;
-        border-color: #666;
-      }
-
-      .avatar {
-        height: 40px;
-        width: 40px;
-        border-radius: 20px;
-        box-sizing: border-box;
-        background-color: #DDD;
-      }
-
-      .pad {
-        padding: 0 16px;
-        @apply(--layout-flex);
-        @apply(--layout-vertical);
-      }
-
-      .primary {
-        font-size: 16px;
-        font-weight: bold;
-      }
-
-      .shortText, .longText {
-        font-size: 14px;
-      }
-
-      .longText {
-        color: gray;
-        display: none;
-      }
-
-      .item:hover .shortText::after {
-        content: ' [+]';
-        color: gray;
-      }
-
-      .item.expanded:hover .shortText::after {
-        content: '';
-      }
-
-      .item.expanded .longText {
-        display: block;
-      }
-
-      .item.expanded:hover .longText::after {
-        content: ' [–]';
-      }
-    </style>
-    <iron-list id="list" items="[[items]]" as="item">
-        <template>
-          <div on-tap="_collapseExpand">
-            <div class$="[[getClassForItem(item, item.expanded)]]" tabindex="0">
-              <div> [[item.index]]</div>
-              <div class="pad">
-                <div class="primary">[[item.name]]</div>
-                <div class="shortText">[[item.shortText]]</div>
-                <div class="longText">[[item.longText]]</div>
-              </div>
-            </div>
-          </div>
-        </template>
-      </iron-list>
-  </template>
-  <script>
-  HTMLImports.whenReady(function() {
-      Polymer({
-        is: 'x-collapse',
-        properties: {
-          items: {
-            type: Array
-          }
-        },
-
-        _collapseExpand: function(e) {
-          var list = this.$.list;
-          var index = e.model.index;
-          var isExpanded = list.items[index].expanded;
-
-          list.set('items.' + index + '.expanded', !isExpanded);
-          list.updateSizeForItem(e.model.index);
-        },
-
-        iconForItem: function(item) {
-          return item ? (item.integer < 50 ? 'star-border' : 'star') : '';
-        },
-
-        getClassForItem: function(item, expanded) {
-          return expanded ? 'item expanded' : 'item';
-        }
-      });
-    });
-  </script>
-</dom-module>
-
 </div>
     <span id="browser-sync-binding"></span>
     <template is="dom-bind" id="app">
@@ -34234,7 +34095,7 @@ Fired whenever the directions service returns a result.
 
                         <paper-fab id="recommendationButton" class="nextButton" icon="file-upload"></paper-fab>
                         <p class="nextButton">Search &nbsp; </p>
-                        <paper-toast id="toaster" text="Please remove special characters like [ ],or ' "></paper-toast>
+                        <paper-toast id="toaster" text="{{toaster}}"></paper-toast>
 
                     </section>
 
@@ -34273,8 +34134,8 @@ Fired whenever the directions service returns a result.
                         </paper-material>
 
                         <paper-material>
-                            <google-map map="{{map}}" disabledefaultui="" latitude="34.1030032" longitude="-118.4104684" fit-to-markers="" fittomarkers="">
-                                <template is="dom-repeat" items="[[response]]">
+                            <google-map map="{{map}}" fit-to-markers="">
+                                <template is="dom-repeat" items="[[locationItems]]">
                                     <google-map-marker map="{{map}}" latitude="{{item.lat}}" longitude="{{item.lng}}">
                                     </google-map-marker>
                                 </template>
@@ -34339,14 +34200,12 @@ Fired whenever the directions service returns a result.
                     </section>
 
                     <iron-ajax method="POST" id="queryCall" url="/query/submit" contenttype="application/json" handle-as="json" debounce-duration="300">
+                    </iron-ajax>
 
                     <iron-ajax method="GET" id="retrieveTitlesCall" url="/query/titles" contenttype="application/json" handle-as="json" debounce-duration="300">
                     </iron-ajax>
 
                     <iron-ajax method="GET" id="retrieveFoundListCall" url="{{retrieveFoundListUrl}}" contenttype="application/json" handle-as="json" debounce-duration="300">
-                    </iron-ajax>
-
-
                     </iron-ajax>
 
                 </iron-pages>
@@ -34428,9 +34287,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         var queryCall = document.querySelector('#queryCall');
 
+        var toaster = document.querySelector('#toaster');
+
         queryCall.addEventListener('response', function (e) {
             console.log("response from server" + JSON.stringify(e.detail.response));
             //prepare the data for the recommendationItems
+
+            if (e.detail.response.status)
+            {
+                //invalid input
+                app.toaster= e.detail.response.status;
+                toaster.show();
+                return;
+            }
 
             var results = e.detail.response.found;
 
@@ -34444,12 +34313,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             })
 
             app.list = list;
+            app.switch();
 
+            //scrollup
+            scrollHeadPanel.scroller.scrollTop = 0;
         });
 
         var querySubmission = function () {
 
             //fill in the enteredItem
+
             var text = [{
                 index: "",
                 name: app.title,
@@ -34476,17 +34349,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         recommendationButton.addEventListener('click', function(event){
             var reg = /\[|\]/;
-            if (app.title.match(reg)||app.description.match(reg)){
-                var toaster = document.querySelector('#toaster');
-                toaster.show();
-            }
-            else {
-                querySubmission();
-                app.switch();
 
-                //scrollup
-                scrollHeadPanel.scroller.scrollTop = 0;
+            if (!app.title || !app.description)
+            {
+                app.toaster= "Title or Description should not be empty";
+                toaster.show();
+                return;
             }
+
+            if (app.title.match(reg)||app.description.match(reg)){
+                app.toaster = "Please remove special characters such as [ or ]"
+                toaster.show();
+                return;
+            }
+
+            querySubmission();
+
         });
 
         var searchedItems;
@@ -34530,6 +34408,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             app.selectedTitile = event.detail.response.title;
             app.selectedDescription = event.detail.response.description;
+
+            var location =[];
+            var found = event.detail.response.found;
+
+            if (!found)
+                return;
+
+            found.forEach(function(element){
+               var loc = {};
+               loc.lat = element.lat;
+               loc.lng = element.lng;
+               location.push(loc);
+            });
+
+            app.locationItems = location;
 
             grid.data.source = event.detail.response.found;
 
