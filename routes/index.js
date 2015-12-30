@@ -6,7 +6,7 @@ module.exports=function(app){
 
    app.get('/', function(req,res){
 
-       res.render('app/index_original.html');
+       res.render('app/index.html');
 
    });
 
