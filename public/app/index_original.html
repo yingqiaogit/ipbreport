@@ -43,7 +43,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
 
     <!-- build:css styles/main.css -->
-    <link rel="stylesheet" href="../app/styles/main2.css">
+    <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild-->
 
     <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
@@ -51,7 +51,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- endbuild -->
 
     <!-- will be replaced with elements/elements.vulcanized.html -->
-    <link rel="import" href="../app/elements/elements2.html">
+    <link rel="import" href="elements/elements.html">
     <!-- endreplace-->
 </head>
 
@@ -213,14 +213,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </section>
 
                     <iron-ajax method="POST" id="queryCall" url="/query/submit" contentType="application/json" handle-as="json" debounce-duration="300">
+                    </iron-ajax>
 
                     <iron-ajax method="GET" id="retrieveTitlesCall" url="/query/titles" contentType="application/json" handle-as="json" debounce-duration="300">
                     </iron-ajax>
 
                     <iron-ajax method="GET" id="retrieveFoundListCall" url="{{retrieveFoundListUrl}}" contentType="application/json" handle-as="json" debounce-duration="300">
-                    </iron-ajax>
-
-
                     </iron-ajax>
 
                 </iron-pages>
@@ -230,7 +228,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </template>
     <!-- build:js scripts/app.js -->
-    <script src="../app/scripts/app2.js "></script>
+    <script src="scripts/app.js "></script>
     <!-- endbuild-->
 </body>
 
