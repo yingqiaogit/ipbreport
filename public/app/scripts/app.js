@@ -7,83 +7,214 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-(function(document) {
-  'use strict';
+(function () {
+    'use strict';
 
-  // Grab a reference to our auto-binding template
-  // and give it some initial binding values
-  // Learn more about auto-binding templates at http://goo.gl/Dx1u2g
-  var app = document.querySelector('#app');
+    // Grab a reference to our auto-binding template
+    // and give it some initial binding values
+    // Learn more about auto-binding templates at http://goo.gl/Dx1u2g
+    var app = document.querySelector('#app');
 
-  app.displayInstalledToast = function() {
-    document.querySelector('#caching-complete').show();
-  };
-
-  // Listen for template bound event to know when bindings
-  // have resolved and content has been stamped to the page
-  app.addEventListener('dom-change', function() {
-    console.log('Our app is ready to rock!');
-  });
-
-  // See https://github.com/Polymer/polymer/issues/1381
-  window.addEventListener('WebComponentsReady', function() {
-    // imports are loaded and elements have been registered
-    app.selectedLanguage=" I selected English";
-
-    var languageSelector = document.getElementById('langSelElement');
-
-    languageSelector.addEventListener('langchanged', function(event){
-      app.languageAbr = event.detail.languageshort;
-      app.selectedLanguage = event.detail.languagelong
+    // Listen for template bound event to know when bindings
+    // have resolved and content has been stamped to the page
+    app.addEventListener('dom-change', function () {
+        console.log('Our app is ready to rock!');
     });
 
-    var configuredLang = [
-      {abr:'en',des:'I select English'},
-      {abr:'fr', des: 'je parle français'},
-      {abr:'zh-Hans', des: '?????'}];
+    // Close drawer after menu item is selected if drawerPanel is narrow
 
-    app.langs = configuredLang;
-    app.chinese = '?????';
-    app.english='I speak English';
+    // See https://github.com/Polymer/polymer/issues/1381
 
-    var chineseText = document.getElementById("chineseText");
+    window.addEventListener('WebComponentsReady', function () {
 
-    chineseText.innerHTML = '?????';
+        app.onMenuSelect = function () {
+            var drawerPanel = document.querySelector('#paperDrawerPanel');
+            if (drawerPanel.narrow) {
+                drawerPanel.closeDrawer();
+            }
+        };
 
+        var pages = document.querySelector('iron-pages');
 
-  });
+        app.switch = function () {
+            pages.selectNext();
+        };
 
-  // Main area's paper-scroll-header-panel custom condensing transformation of
-  // the appName in the middle-container and the bottom title in the bottom-container.
-  // The appName is moved to top and shrunk on condensing. The bottom sub title
-  // is shrunk to nothing on condensing.
-  addEventListener('paper-header-transform', function(e) {
-    var appName = document.querySelector('.app-name');
-    var middleContainer = document.querySelector('.middle-container');
-    var bottomContainer = document.querySelector('.bottom-container');
-    var detail = e.detail;
-    var heightDiff = detail.height - detail.condensedHeight;
-    var yRatio = Math.min(1, detail.y / heightDiff);
-    var maxMiddleScale = 0.50;  // appName max size when condensed. The smaller the number the smaller the condensed size.
-    var scaleMiddle = Math.max(maxMiddleScale, (heightDiff - detail.y) / (heightDiff / (1-maxMiddleScale))  + maxMiddleScale);
-    var scaleBottom = 1 - yRatio;
+        /*
+        app.addEventListener('switcher', function (e) {
+            app.switch();
+        });
+        */
 
-    // Move/translate middleContainer
-    Polymer.Base.transform('translate3d(0,' + yRatio * 100 + '%,0)', middleContainer);
+        var scrollHeadPanel = document.querySelectorAll('paper-scroll-header-panel');
 
-    // Scale bottomContainer and bottom sub title to nothing and back
-    Polymer.Base.transform('scale(' + scaleBottom + ') translateZ(0)', bottomContainer);
+        var categorySelect = document.querySelector('#categoryTab');
 
-    // Scale middleContainer appName
-    Polymer.Base.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
-  });
+        categorySelect.addEventListener('click', function (event) {
 
-  // Close drawer after menu item is selected if drawerPanel is narrow
-  app.onMenuSelect = function() {
-    var drawerPanel = document.querySelector('#paperDrawerPanel');
-    if (drawerPanel.narrow) {
-      drawerPanel.closeDrawer();
-    }
-  };
+            if (categorySelect.selected == 0) {
+                    pages.selected = "home";
+            } else
+                if (categorySelect.selected == 1)
+                {
+                    pages.selected = "similarityanalysis";
+                    openAnalysis();
+                }else
+                    if (categorySelect.selected == 2)
+                    {
+                        pages.selected = "summary";
+                     }
 
-})(document);
+            scrollHeadPanel.scroller.scrollTop = 0;
+        });
+
+        var queryCall = document.querySelector('#queryCall');
+
+        var toaster = document.querySelector('#toaster');
+
+        queryCall.addEventListener('response', function (e) {
+            console.log("response from server" + JSON.stringify(e.detail.response));
+            //prepare the data for the recommendationItems
+
+            if (e.detail.response.status)
+            {
+                //invalid input
+                app.toaster= e.detail.response.status;
+                toaster.show();
+                return;
+            }
+
+            var results = e.detail.response.found;
+
+            var list = [];
+
+            results.forEach(function(item){
+                var element = {};
+                element.url = '/request?id=' + item.id;
+                element.label = item.label;
+                list.push(element);
+            })
+
+            app.list = list;
+            app.switch();
+
+            //scrollup
+            scrollHeadPanel.scroller.scrollTop = 0;
+        });
+
+        var querySubmission = function () {
+
+            //fill in the enteredItem
+
+            var text = [{
+                index: "",
+                name: app.title,
+                shortText: "",
+                longText:app.description
+            }];
+
+            app.enteredItem = text;
+            //query the data
+            var query_data = {};
+            query_data.title = app.title;
+            query_data.description = app.description;
+
+            console.log(query_data);
+
+            queryCall.body = JSON.stringify(query_data);
+
+            console.log(queryCall.body);
+
+            queryCall.generateRequest();
+        };
+
+        var recommendationButton = document.querySelector('#recommendationButton');
+
+        recommendationButton.addEventListener('click', function(event){
+            var reg = /\[|\]/;
+
+            if (!app.title || !app.description)
+            {
+                app.toaster= "Title or Description should not be empty";
+                toaster.show();
+                return;
+            }
+
+            if (app.title.match(reg)||app.description.match(reg)){
+                app.toaster = "Please remove special characters such as [ or ]"
+                toaster.show();
+                return;
+            }
+
+            querySubmission();
+
+        });
+
+        var searchedItems;
+
+        var retrieveTitlesCall = document.querySelector('#retrieveTitlesCall');
+
+        retrieveTitlesCall.addEventListener('response',function(event){
+
+            searchedItems = event.detail.response.titles;
+
+            console.log("titles:" + JSON.stringify(searchedItems));
+            app.searchedItems = searchedItems;
+        });
+
+        var openAnalysis=function(){
+            retrieveTitlesCall.generateRequest();
+        };
+
+        var titleSelector = document.querySelector('#titleselector');
+
+        var retrieveFoundListCall = document.querySelector('#retrieveFoundListCall')
+
+        titleSelector.addEventListener('iron-select', function(event){
+
+            console.log(titleSelector.selected);
+
+            var id = searchedItems[titleSelector.selected].key;
+
+            //compose a call to retrieve the found list
+            console.log("selected id is " + id);
+
+            app.retrieveFoundListUrl = '/query/found?id='+id;
+
+            retrieveFoundListCall.generateRequest();
+
+        });
+
+        var grid = document.querySelector("v-grid");
+
+        retrieveFoundListCall.addEventListener('response', function(event){
+
+            app.selectedTitile = event.detail.response.title;
+            app.selectedDescription = event.detail.response.description;
+
+            var location =[];
+            var found = event.detail.response.found;
+
+            if (!found)
+                return;
+
+            found.forEach(function(element){
+               var loc = {};
+               loc.lat = element.lat;
+               loc.lng = element.lng;
+               location.push(loc);
+            });
+
+            app.locationItems = location;
+
+            grid.data.source = event.detail.response.found;
+
+            grid.columns[0].renderer = function (cell) {
+                    cell.element.innerHTML = cell.row.index;
+            }
+
+        });
+
+    });
+
+})();
