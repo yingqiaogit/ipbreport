@@ -3,10 +3,10 @@ applications:
   memory: 1024M
   instances: 1
   domain: mybluemix.net
-  name: uploadingtest
-  host: uploadingtest
+  name: disasterinformationsearch
+  host: disasterinformationsearch
   disk_quota: 1024M
   services:
-  - Concept Insights-bn
+  - Concept Insights-5b
   - Relationship Extraction-a3
-  - Cloudant NoSQL DB-rx
+  - Cloudant NoSQL DB-yr

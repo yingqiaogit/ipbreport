@@ -188,7 +188,7 @@ var set_app = function(){
   require('./routes/index')(app);
   require('./routes/requests')(app);
   require('./routes/relationship_extraction')(app);
-  require('./routes/concept_insights')(app);
+  require('./routes/building_corpus')(app);
   require('./routes/query')(app);
 }
 
