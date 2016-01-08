@@ -1,12 +1,12 @@
 applications:
 - path: .
-  memory: 256M
+  memory: 1024M
   instances: 1
   domain: mybluemix.net
   name: disasterinformationsearch
   host: disasterinformationsearch
   disk_quota: 1024M
   services:
-  - Concept Insights-2i
-  - Relationship Extraction-ss
-  - Cloudant NoSQL DB-3o
+  - Concept Insights-5b
+  - Relationship Extraction-a3
+  - Cloudant NoSQL DB-yr

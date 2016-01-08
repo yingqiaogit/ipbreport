@@ -25,6 +25,7 @@ module.exports=function(app){
         }
         var location = [];
         var country = [];
+        var general = ['Government'];
 
         original.forEach(function(item){
             if (typeof organized[item.type] !='undefined' ){
@@ -33,14 +34,14 @@ module.exports=function(app){
                 entity.name = item.mentref[0].text;
                 entity.score =item.score;
 
-                if (item.type === 'GPE'){
-                    if (item.subtype==='COUNTRY')
-                        country.push(entity);
-                    else
-                        location.push(entity);
-                }else
-                    organized[item.type].push(entity);
-
+                if (general.indexOf(entity.name)== -1)
+                    if (item.type === 'GPE'){
+                        if (item.subtype==='COUNTRY')
+                            country.push(entity);
+                        else
+                            location.push(entity);
+                    }else
+                        organized[item.type].push(entity);
             }
         });
 
@@ -273,33 +274,36 @@ module.exports=function(app){
                         disaster_events.push(disaster.concept.id);
                     })
 
-                    var geological_objs = [];
-
-                    entities.GEOLOGICALOBJ.forEach(function(geoObj){
-
-                        geological_objs.push(geoObj.concept.id);
-                    })
-
                     var tasks = {};
 
-                    if (entities.COUNTRY.length == 0 && entities.GEOLOGICALOBJ == 0)
+                    if (!entities.COUNTRY.length && !entities.GEOLOGICALOBJ)
                     {
-                        tasks.country=disaster_events.concat(entities.LOCATION[0].concept.id);
+                        tasks.country=disaster_events.push(entities.LOCATION[0].concept.id);
                     }
                     else {
                         //query #1 contains the concept_ids of country and event_disaster
                         //in the case that there is no country, then, uses the first location
-                        if (entities.COUNTRY.length > 0)
-                            tasks.country=disaster_events.concat(entities.COUNTRY[0].concept.id);
+                        if (entities.COUNTRY.length)
+                            tasks.country=disaster_events.concat([entities.COUNTRY[0].concept.id]);
                         else
-                            tasks.country=disaster_events.concat(entities.LOCATION[0].concept.id);
+                           if (entities.LOCATION.length)
+                                tasks.country=disaster_events.concat([entities.LOCATION[0].concept.id]);
 
                         //query #2 contains the concept_ids of geologicalobj and event_disaster
                         //in the case that there is no geologicalobj, then, uses the first location
-                        if (entities.GEOLOGICALOBJ.length > 0)
-                            tasks.geoobj=disaster_events.concat(geological_objs);
+                        if (entities.GEOLOGICALOBJ.length) {
+                            var geological_objs = [];
+
+                            entities.GEOLOGICALOBJ.forEach(function (geoObj) {
+
+                                geological_objs.push(geoObj.concept.id);
+                            })
+
+                            tasks.geoobj = disaster_events.concat(geological_objs);
+                        }
                         else
-                            tasks.geoobj=disaster_events.concat(entities.LOCATION[0].concept.id);
+                            if (entities.LOCATION.length )
+                                tasks.geoobj=disaster_events.concat([entities.LOCATION[0].concept.id]);
                     }
 
                     var results={};
